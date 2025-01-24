@@ -1,5 +1,6 @@
 package com.chavaillaz.appender.log4j.opensearch;
 
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.apache.http.auth.AuthScope.ANY;
 
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -25,6 +26,20 @@ import org.opensearch.client.transport.rest_client.RestClientTransport;
  */
 @UtilityClass
 public class OpensearchUtils {
+
+    /**
+     * Creates a new OpenSearch client.
+     *
+     * @param configuration The configuration to use
+     * @return The OpenSearch client with the given configuration
+     */
+    public static OpenSearchClient createClient(OpensearchConfiguration configuration) {
+        if (isNotBlank(configuration.getApiKey())) {
+            return createClient(configuration.getUrl(), createPermissiveContext(), configuration.getApiKey());
+        } else {
+            return createClient(configuration.getUrl(), createPermissiveContext(), configuration.getUser(), configuration.getPassword());
+        }
+    }
 
     /**
      * Creates a new OpenSearch client.
