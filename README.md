@@ -11,6 +11,7 @@ done asynchronously and therefore will not block the execution of applications u
 | Appender version | Log4j version | OpenSearch version | Documentation |
 |------------------|---------------|--------------------|---------------|
 | 1.0.0            | 2.24.1        | 2.x                | See below     |
+| 1.0.1            | 2.24.3        | 2.x                | See below     |
 
 ## Installation
 
