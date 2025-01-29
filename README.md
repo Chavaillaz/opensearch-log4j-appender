@@ -52,7 +52,7 @@ Note that `Url` is the only mandatory configuration, except if you need to overw
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<Configuration status="info" packages="com.chavaillaz.appender.log4j.opensearch">
+<Configuration status="info">
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
@@ -63,7 +63,7 @@ Note that `Url` is the only mandatory configuration, except if you need to overw
             <Environment>local</Environment>
             <Converter>com.chavaillaz.appender.log4j.DefaultLogConverter</Converter>
             <Index>ha</Index>
-            <IndexSuffix>-yyyy.MM.dd</IndexSuffix>
+            <IndexSuffix>-yyyy.MM</IndexSuffix>
             <Url>http://localhost:9200</Url>
             <User>admin</User>
             <Password>admin</Password>
@@ -72,10 +72,13 @@ Note that `Url` is the only mandatory configuration, except if you need to overw
         </OpensearchAppender>
     </Appenders>
     <Loggers>
-        <Root level="info">
+        <Root level="INFO">
             <AppenderRef ref="Console"/>
-            <AppenderRef ref="OpenSearch" additivity="false"/>
+            <AppenderRef ref="OpenSearch"/>
         </Root>
+        <Logger name="com.chavaillaz.appender" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
     </Loggers>
 </Configuration>
 ```
