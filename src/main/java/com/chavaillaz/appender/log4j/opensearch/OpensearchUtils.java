@@ -11,10 +11,9 @@ import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.http.message.BasicHeader;
-import org.opensearch.client.RestClient;
 import org.opensearch.client.json.jackson.JacksonJsonpMapper;
 import org.opensearch.client.opensearch.OpenSearchClient;
-import org.opensearch.client.transport.rest_client.RestClientTransport;
+import org.opensearch.client.transport.httpclient5.ApacheHttpClient5TransportBuilder;
 
 /**
  * OpenSearch specific utility methods.
@@ -52,11 +51,14 @@ public class OpensearchUtils {
                 new UsernamePasswordCredentials(username, password.toCharArray())
         );
 
-        return createClient(RestClient
+        JacksonJsonpMapper jsonMapper = new JacksonJsonpMapper();
+        jsonMapper.objectMapper().registerModule(new JavaTimeModule());
+
+        return new OpenSearchClient(ApacheHttpClient5TransportBuilder
                 .builder(HttpHost.create(url))
-                .setHttpClientConfigCallback(httpClientBuilder ->
-                        httpClientBuilder
-                                .setDefaultCredentialsProvider(credentialsProvider))
+                .setMapper(jsonMapper)
+                .setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder
+                        .setDefaultCredentialsProvider(credentialsProvider))
                 .build());
     }
 
@@ -70,23 +72,15 @@ public class OpensearchUtils {
     @SneakyThrows
     public static OpenSearchClient createClient(String url, String apiKey) {
         Header headerApiKey = new BasicHeader("Authorization", "ApiKey " + apiKey);
-        return createClient(RestClient
-                .builder(HttpHost.create(url))
-                .setDefaultHeaders(new Header[]{headerApiKey})
-                .build());
-    }
 
-    /**
-     * Creates a new OpenSearch client using the given REST client
-     * and using a customized JSON Mapper with Java 8 Date/Time Module.
-     *
-     * @param restClient The REST client to use
-     * @return The OpenSearch client with the given configuration
-     */
-    public static OpenSearchClient createClient(RestClient restClient) {
         JacksonJsonpMapper jsonMapper = new JacksonJsonpMapper();
         jsonMapper.objectMapper().registerModule(new JavaTimeModule());
-        return new OpenSearchClient(new RestClientTransport(restClient, jsonMapper));
+
+        return new OpenSearchClient(ApacheHttpClient5TransportBuilder
+                .builder(HttpHost.create(url))
+                .setMapper(jsonMapper)
+                .setDefaultHeaders(new Header[]{headerApiKey})
+                .build());
     }
 
 }
