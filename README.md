@@ -12,6 +12,12 @@ done asynchronously and therefore will not block the execution of applications u
 |------------------|---------------|--------------------|---------------|
 | 1.0.0            | 2.24.1        | 2.x                | See below     |
 | 1.0.1            | 2.24.3        | 2.x                | See below     |
+| 1.1.0            | 2.24.3        | 3.x                | See below     |
+
+See [the compatibility details from OpenSearch](https://github.com/opensearch-project/opensearch-java/blob/main/COMPATIBILITY.md)
+for more details.
+
+Note that this appender requires at least **Java 17**.
 
 ## Installation
 

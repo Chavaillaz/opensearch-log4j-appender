@@ -1,7 +1,6 @@
 package com.chavaillaz.appender.log4j.opensearch;
 
 import static com.chavaillaz.appender.log4j.opensearch.OpensearchUtils.createClient;
-import static com.chavaillaz.appender.log4j.opensearch.OpensearchUtils.createPermissiveContext;
 import static java.net.InetAddress.getLocalHost;
 import static java.time.Duration.ofSeconds;
 import static org.apache.logging.log4j.Level.INFO;
@@ -20,7 +19,7 @@ import org.apache.logging.log4j.message.SimpleMessage;
 import org.junit.jupiter.api.Test;
 import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.opensearch.core.search.Hit;
-import org.opensearch.testcontainers.OpensearchContainer;
+import org.opensearch.testcontainers.OpenSearchContainer;
 import org.testcontainers.utility.DockerImageName;
 
 class OpensearchAppenderTest {
@@ -30,7 +29,7 @@ class OpensearchAppenderTest {
 
     public static final DockerImageName IMAGE = DockerImageName
             .parse("opensearchproject/opensearch")
-            .withTag("2.18.0");
+            .withTag("3.1.0");
 
     protected static OpensearchAppender createAppender(String url, String username, String password) throws Exception {
         OpensearchAppender.Builder builder = OpensearchAppender.builder();
@@ -62,13 +61,13 @@ class OpensearchAppenderTest {
 
     @Test
     void systemTestWithOpensearch() throws Exception {
-        try (OpensearchContainer<?> container = new OpensearchContainer<>(IMAGE)) {
+        try (OpenSearchContainer<?> container = new OpenSearchContainer<>(IMAGE)) {
             container.start();
 
             // Given
             String id = UUID.randomUUID().toString();
             String logger = getRootLogger().getClass().getCanonicalName();
-            OpenSearchClient client = createClient(container.getHttpHostAddress(), createPermissiveContext(), container.getUsername(), container.getPassword());
+            OpenSearchClient client = createClient(container.getHttpHostAddress(), container.getUsername(), container.getPassword());
             OpensearchAppender appender = createAppender(container.getHttpHostAddress(), container.getUsername(), container.getPassword());
             ThreadContext.put("key", "value");
 
