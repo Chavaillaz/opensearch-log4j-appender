@@ -8,16 +8,14 @@
 This appender allows you to send log events directly from Log4j to an OpenSearch cluster. The delivery of logs is
 done asynchronously and therefore will not block the execution of applications using it.
 
-| Appender version | Log4j version | OpenSearch version | Documentation |
-|------------------|---------------|--------------------|---------------|
-| 1.0.0            | 2.24.1        | 2.x                | See below     |
-| 1.0.1            | 2.24.3        | 2.x                | See below     |
-| 1.1.0            | 2.24.3        | 3.x                | See below     |
+| Appender version | Log4j version | OpenSearch version | Java version | Documentation |
+|------------------|---------------|--------------------|--------------|---------------|
+| 1.0.0            | 2.24.1        | 2.x                | 17+          | See below     |
+| 1.0.1            | 2.24.3        | 2.x                | 17+          | See below     |
+| 1.1.0            | 2.24.3        | 3.x                | 21+          | See below     |
 
 See [the compatibility details from OpenSearch](https://github.com/opensearch-project/opensearch-java/blob/main/COMPATIBILITY.md)
 for more details.
-
-Note that this appender requires at least **Java 17**.
 
 ## Installation
 
