@@ -53,11 +53,11 @@ public class OpensearchLogDelivery extends AbstractBatchLogDelivery<OpensearchCo
 
             BulkResponse response = client.bulk(builder.build());
             if (!response.errors()) {
-                log.debug("Bulk of {} elements sent successfully in {}ms", documents.size(), response.took());
+                log.debug("Bulk of {} documents sent successfully in {}ms", documents.size(), response.took());
                 return true;
             }
         } catch (Exception e) {
-            log.warn("Error when sending bulk", e);
+            log.warn("Unable to send bulk of {} documents: {}", documents.size(), e.getMessage(), e);
         }
         return false;
     }
