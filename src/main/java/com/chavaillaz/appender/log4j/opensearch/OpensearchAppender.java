@@ -15,6 +15,7 @@ import com.chavaillaz.appender.log4j.DefaultLogConverter;
 import com.chavaillaz.appender.log4j.LogConverter;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
@@ -54,6 +55,7 @@ public class OpensearchAppender extends AbstractLogDeliveryAppender<OpensearchCo
 
     @Setter
     @Getter
+    @Accessors(chain = true)
     public static class Builder implements org.apache.logging.log4j.core.util.Builder<OpensearchAppender> {
 
         @PluginBuilderAttribute
