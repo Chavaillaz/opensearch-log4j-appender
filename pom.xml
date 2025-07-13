@@ -157,41 +157,31 @@
                             <artifactId>lombok</artifactId>
                             <version>${lombok.version}</version>
                         </path>
+                        <path>
+                            <groupId>org.apache.logging.log4j</groupId>
+                            <artifactId>log4j-core</artifactId>
+                            <version>${log4j.version}</version>
+                        </path>
                     </annotationProcessorPaths>
+                    <annotationProcessors>
+                        <!-- Process Lombok annotations to generate corresponding sources -->
+                        <processor>
+                            lombok.launch.AnnotationProcessorHider$AnnotationProcessor
+                        </processor>
+                        <!-- Process sources to generate `Log4j2Plugins.dat` -->
+                        <processor>
+                            org.apache.logging.log4j.core.config.plugins.processor.PluginProcessor
+                        </processor>
+                        <!-- Process sources to generate a GraalVM reachability metadata file -->
+                        <processor>
+                            org.apache.logging.log4j.core.config.plugins.processor.GraalVmProcessor
+                        </processor>
+                    </annotationProcessors>
                     <compilerArgs>
                         <arg>-Alog4j.graalvm.groupId=${project.groupId}</arg>
                         <arg>-Alog4j.graalvm.artifactId=${project.artifactId}</arg>
                     </compilerArgs>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>generate-log4j-plugin-descriptor</id>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                        <phase>process-classes</phase>
-                        <configuration>
-                            <proc>only</proc>
-                            <annotationProcessorPaths>
-                                <path>
-                                    <groupId>org.apache.logging.log4j</groupId>
-                                    <artifactId>log4j-core</artifactId>
-                                    <version>${log4j.version}</version>
-                                </path>
-                            </annotationProcessorPaths>
-                            <annotationProcessors>
-                                <!-- Process sources to generate `Log4j2Plugins.dat` -->
-                                <processor>
-                                    org.apache.logging.log4j.core.config.plugins.processor.PluginProcessor
-                                </processor>
-                                <!-- Process sources to generate a GraalVM reachability metadata file -->
-                                <processor>
-                                    org.apache.logging.log4j.core.config.plugins.processor.GraalVmProcessor
-                                </processor>
-                            </annotationProcessors>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
 
             <plugin>
