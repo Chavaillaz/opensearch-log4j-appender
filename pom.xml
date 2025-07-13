@@ -158,6 +158,10 @@
                             <version>${lombok.version}</version>
                         </path>
                     </annotationProcessorPaths>
+                    <compilerArgs>
+                        <arg>-Alog4j.graalvm.groupId=${project.groupId}</arg>
+                        <arg>-Alog4j.graalvm.artifactId=${project.artifactId}</arg>
+                    </compilerArgs>
                 </configuration>
                 <executions>
                     <execution>
@@ -179,6 +183,10 @@
                                 <!-- Process sources to generate `Log4j2Plugins.dat` -->
                                 <processor>
                                     org.apache.logging.log4j.core.config.plugins.processor.PluginProcessor
+                                </processor>
+                                <!-- Process sources to generate a GraalVM reachability metadata file -->
+                                <processor>
+                                    org.apache.logging.log4j.core.config.plugins.processor.GraalVmProcessor
                                 </processor>
                             </annotationProcessors>
                         </configuration>
