@@ -44,6 +44,7 @@ In the Log4j configuration file, add a new appender `OpensearchAppender` using p
 | Index             | INDEX                         | `ha`                        | The name of the OpenSearch index to which the documents are sent.                                                                       |
 | IndexSuffix       | INDEX_SUFFIX                  | -                           | The suffix added to the index name (using current date) in a format pattern suitable for `DateTimeFormatter`.                           |
 | Url               | OPENSEARCH_URL                | -                           | The address of OpenSearch in the format `scheme://host:port`.                                                                           |
+| UrlTrusted        | -                             | false                       | The flag to disable SSL verification in case you use HTTPS for REST with a self signed certificate.                                     |
 | User              | OPENSEARCH_USER               | -                           | The username to use as credentials to access OpenSearch.                                                                                |
 | Password          | OPENSEARCH_PASSWORD           | -                           | The password to use as credentials to access OpenSearch.                                                                                |
 | ApiKey            | OPENSEARCH_API_KEY            | -                           | The API key (already encoded) to use as credentials to access OpenSearch.                                                               |
@@ -68,7 +69,8 @@ Note that `Url` is the only mandatory configuration, except if you need to overw
             <Converter>com.chavaillaz.appender.log4j.DefaultLogConverter</Converter>
             <Index>ha</Index>
             <IndexSuffix>-yyyy.MM</IndexSuffix>
-            <Url>http://localhost:9200</Url>
+            <Url>https://localhost:9200</Url>
+            <UrlTrusted>true</UrlTrusted>
             <User>admin</User>
             <Password>admin</Password>
             <FlushThreshold>100</FlushThreshold>

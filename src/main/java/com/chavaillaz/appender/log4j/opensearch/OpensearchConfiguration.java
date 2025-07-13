@@ -28,6 +28,7 @@ public class OpensearchConfiguration implements LogConfiguration {
     private String index;
     private DateTimeFormatter indexSuffix;
     private String url;
+    private boolean urlTrusted;
     private String user;
     private String password;
     private String apiKey;

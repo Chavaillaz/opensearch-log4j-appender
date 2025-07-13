@@ -87,6 +87,9 @@ public class OpensearchAppender extends AbstractLogDeliveryAppender<OpensearchCo
         @PluginBuilderAttribute("Url")
         private String url = getProperty("OPENSEARCH_URL", null);
 
+        @PluginBuilderAttribute("UrlTrusted")
+        private boolean urlTrusted = false;
+
         @PluginBuilderAttribute("User")
         private String user = getProperty("OPENSEARCH_USER", null);
 
@@ -112,6 +115,7 @@ public class OpensearchAppender extends AbstractLogDeliveryAppender<OpensearchCo
             configuration.setIndex(getIndex());
             configuration.setIndexSuffix(getIndexSuffix());
             configuration.setUrl(getUrl());
+            configuration.setUrlTrusted(isUrlTrusted());
             configuration.setUser(getUser());
             configuration.setPassword(getPassword());
             configuration.setApiKey(getApiKey());
