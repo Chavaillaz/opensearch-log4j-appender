@@ -13,6 +13,7 @@ done asynchronously and therefore will not block the execution of applications u
 | 1.0.0            | 2.24.1        | 2.x                | 17+          | See below     |
 | 1.0.1            | 2.24.3        | 2.x                | 17+          | See below     |
 | 1.1.0            | 2.24.3        | 3.x                | 21+          | See below     |
+| 1.1.1            | 2.25.1        | 3.x                | 21+          | See below     |
 
 See [the compatibility details from OpenSearch](https://github.com/opensearch-project/opensearch-java/blob/main/COMPATIBILITY.md)
 for more details.
@@ -22,6 +23,7 @@ for more details.
 The dependency is available in maven central (see badge and table above for the version):
 
 ```xml
+
 <dependency>
     <groupId>com.chavaillaz</groupId>
     <artifactId>opensearch-log4j-appender</artifactId>
