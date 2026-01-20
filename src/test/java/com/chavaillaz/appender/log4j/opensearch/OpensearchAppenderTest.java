@@ -3,11 +3,11 @@ package com.chavaillaz.appender.log4j.opensearch;
 import static com.chavaillaz.appender.log4j.opensearch.OpensearchUtils.createClient;
 import static java.net.InetAddress.getLocalHost;
 import static java.time.Duration.ofSeconds;
+import static org.apache.commons.lang3.ThreadUtils.sleep;
 import static org.apache.logging.log4j.Level.INFO;
 import static org.apache.logging.log4j.LogManager.getRootLogger;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.testcontainers.shaded.org.apache.commons.lang3.ThreadUtils.sleep;
 
 import java.io.IOException;
 import java.util.List;
@@ -29,7 +29,7 @@ class OpensearchAppenderTest {
 
     public static final DockerImageName IMAGE = DockerImageName
             .parse("opensearchproject/opensearch")
-            .withTag("3.1.0");
+            .withTag("3.4.0");
 
     protected static OpensearchAppender createAppender(String url, String username, String password) throws Exception {
         OpensearchAppender.Builder builder = OpensearchAppender.builder();
