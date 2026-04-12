@@ -29,7 +29,7 @@ class OpensearchAppenderTest {
 
     public static final DockerImageName IMAGE = DockerImageName
             .parse("opensearchproject/opensearch")
-            .withTag("3.4.0");
+            .withTag("3.6.0");
 
     protected static OpensearchAppender createAppender(String url, String username, String password) throws Exception {
         OpensearchAppender.Builder builder = OpensearchAppender.builder();
