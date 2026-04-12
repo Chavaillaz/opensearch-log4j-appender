@@ -2,7 +2,7 @@
 
 ![Quality Gate](https://github.com/chavaillaz/opensearch-log4j-appender/actions/workflows/sonarcloud.yml/badge.svg)
 ![Dependency Check](https://github.com/chavaillaz/opensearch-log4j-appender/actions/workflows/snyk.yml/badge.svg)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.chavaillaz/opensearch-log4j-appender/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.chavaillaz/opensearch-log4j-appender)
+[![Maven Central](https://maven-badges.sml.io/maven-central/com.chavaillaz/opensearch-log4j-appender/badge.svg?subject=Maven%20Central&color=blue)](https://maven-badges.sml.io/maven-central/com.chavaillaz/opensearch-log4j-appender)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 This appender allows you to send log events directly from Log4j to an OpenSearch cluster. The delivery of logs is
