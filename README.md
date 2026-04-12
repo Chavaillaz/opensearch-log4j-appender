@@ -15,6 +15,7 @@ done asynchronously and therefore will not block the execution of applications u
 | 1.1.0            | 2.24.3        | 3.x                | 21+          | See below     |
 | 1.1.1            | 2.25.1        | 3.x                | 21+          | See below     |
 | 1.1.2            | 2.25.3        | 3.x                | 21+          | See below     |
+| 1.1.3            | 2.25.4        | 3.x                | 21+          | See below     |
 
 See [the compatibility details from OpenSearch](https://github.com/opensearch-project/opensearch-java/blob/main/COMPATIBILITY.md)
 for more details.
