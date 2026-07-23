@@ -4,7 +4,6 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import java.security.GeneralSecurityException;
 
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import org.apache.hc.client5.http.auth.AuthScope;
@@ -20,7 +19,7 @@ import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.http.message.BasicHeader;
 import org.apache.hc.core5.http.nio.ssl.TlsStrategy;
 import org.apache.hc.core5.ssl.SSLContexts;
-import org.opensearch.client.json.jackson.JacksonJsonpMapper;
+import org.opensearch.client.json.jackson3.JacksonJsonpMapper;
 import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.transport.httpclient5.ApacheHttpClient5TransportBuilder;
 
@@ -99,9 +98,7 @@ public class OpensearchUtils {
      * @return The mapper with Java time module registered
      */
     public static JacksonJsonpMapper getJsonMapper() {
-        JacksonJsonpMapper jsonMapper = new JacksonJsonpMapper();
-        jsonMapper.objectMapper().registerModule(new JavaTimeModule());
-        return jsonMapper;
+        return new JacksonJsonpMapper();
     }
 
     /**
