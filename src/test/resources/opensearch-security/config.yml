@@ -1,0 +1,22 @@
+_meta:
+  type: "config"
+  config_version: 2
+
+config:
+  dynamic:
+    authc:
+      basic_internal_auth_domain:
+        description: "Authenticate via HTTP Basic against internal users database"
+        http_enabled: true
+        transport_enabled: true
+        order: 0
+        http_authenticator:
+          type: basic
+          challenge: false
+        authentication_backend:
+          type: internal
+
+    api_tokens:
+      enabled: true
+      max_duration_seconds: 7776000   # 90 days (maximum)
+      max_tokens: 100                 # Maximum outstanding tokens

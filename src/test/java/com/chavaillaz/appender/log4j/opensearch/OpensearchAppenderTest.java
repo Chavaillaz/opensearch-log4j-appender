@@ -1,5 +1,6 @@
 package com.chavaillaz.appender.log4j.opensearch;
 
+import static com.chavaillaz.appender.log4j.opensearch.OpensearchApiKeyHelper.createApiKey;
 import static com.chavaillaz.appender.log4j.opensearch.OpensearchUtils.createClient;
 import static java.net.InetAddress.getLocalHost;
 import static java.time.Duration.ofSeconds;
@@ -21,15 +22,14 @@ import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.opensearch.core.search.Hit;
 import org.opensearch.testcontainers.OpenSearchContainer;
 import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.utility.MountableFile;
 
 class OpensearchAppenderTest {
 
-    // API Key generation is not yet supported and therefore not tested
-    // https://github.com/opensearch-project/security/issues/1504
-
+    public static final boolean URL_TRUSTED = true;
     public static final DockerImageName IMAGE = DockerImageName
             .parse("opensearchproject/opensearch")
-            .withTag("3.7.0");
+            .withTag("3.8.0");
 
     protected static OpensearchAppender createAppender(String url, String username, String password) throws Exception {
         OpensearchAppender.Builder builder = OpensearchAppender.builder();
@@ -37,6 +37,7 @@ class OpensearchAppenderTest {
         builder.setApplicationName("my-application");
         builder.setHostName(getLocalHost().getHostName());
         builder.setUrl(url);
+        builder.setUrlTrusted(URL_TRUSTED);
         builder.setUser(username);
         builder.setPassword(password);
         builder.setFlushInterval(500);
@@ -62,12 +63,18 @@ class OpensearchAppenderTest {
     @Test
     void systemTestWithOpensearch() throws Exception {
         try (OpenSearchContainer<?> container = new OpenSearchContainer<>(IMAGE)) {
+            container.withSecurityEnabled();
+            container.withCopyFileToContainer(
+                    MountableFile.forClasspathResource("opensearch-security/config.yml"),
+                    "/usr/share/opensearch/config/opensearch-security/config.yml"
+            );
             container.start();
 
             // Given
             String id = UUID.randomUUID().toString();
             String logger = getRootLogger().getClass().getCanonicalName();
-            OpenSearchClient client = createClient(container.getHttpHostAddress(), false, container.getUsername(), container.getPassword());
+            OpenSearchClient client = createClient(container.getHttpHostAddress(), URL_TRUSTED, container.getUsername(), container.getPassword());
+            OpenSearchClient apiClient = createClient(container.getHttpHostAddress(), URL_TRUSTED, createApiKey(client));
             OpensearchAppender appender = createAppender(container.getHttpHostAddress(), container.getUsername(), container.getPassword());
             ThreadContext.put("key", "value");
 
@@ -84,7 +91,7 @@ class OpensearchAppenderTest {
             appender.stop();
 
             // Then
-            List<OpensearchLog> logs = searchLog(client, appender.getLogConfiguration().getIndex(), id);
+            List<OpensearchLog> logs = searchLog(apiClient, appender.getLogConfiguration().getIndex(), id);
             assertEquals(1, logs.size());
             OpensearchLog log = logs.get(0);
             assertEquals(appender.getLogConfiguration().getHost(), log.getHost());
