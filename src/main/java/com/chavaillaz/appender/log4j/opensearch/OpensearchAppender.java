@@ -113,8 +113,12 @@ public class OpensearchAppender extends AbstractLogDeliveryAppender<OpensearchCo
         @PluginBuilderAttribute("Application")
         private String applicationName = getProperty("APP", "unknown");
 
+        /**
+         * The host name, left unset for the {@code HOST} variable or else the name of the machine, resolved
+         * when building the appender: its lookup can take seconds, for nothing when a host name is given.
+         */
         @PluginBuilderAttribute("Host")
-        private String hostName = getProperty("HOST", getInitialHostname());
+        private String hostName;
 
         @PluginBuilderAttribute("Environment")
         private String environmentName = getProperty("ENV", "local");
@@ -195,7 +199,7 @@ public class OpensearchAppender extends AbstractLogDeliveryAppender<OpensearchCo
         public OpensearchAppender build() {
             OpensearchConfiguration configuration = OpensearchConfiguration.builder()
                     .application(getApplicationName())
-                    .host(getHostName())
+                    .host(resolveHostName())
                     .environment(getEnvironmentName())
                     .converter(getConverter())
                     .index(getIndex())
@@ -223,6 +227,19 @@ public class OpensearchAppender extends AbstractLogDeliveryAppender<OpensearchCo
                             .build())
                     .build();
             return new OpensearchAppender(getName(), getFilter(), getLayout(), configuration);
+        }
+
+        /**
+         * The host name set, or else the {@code HOST} variable, or else the name of the machine.
+         *
+         * @return The host name
+         */
+        private String resolveHostName() {
+            if (hostName != null) {
+                return hostName;
+            }
+            String variable = getProperty("HOST", null);
+            return variable != null ? variable : getInitialHostname();
         }
 
         /**
