@@ -103,6 +103,14 @@
             <groupId>org.opensearch.client</groupId>
             <artifactId>opensearch-java</artifactId>
             <version>3.9.0</version>
+            <exclusions>
+                <!-- Annotations for its compilation alone, whose javax.annotation package a module path refuses
+                     to load from two jars, the Jakarta annotations of the client holding it as well -->
+                <exclusion>
+                    <groupId>com.google.code.findbugs</groupId>
+                    <artifactId>jsr305</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>tools.jackson.core</groupId>
@@ -181,18 +189,9 @@
             </plugin>
 
             <plugin>
-                <!-- Names the module of the appender on the module path: the OpenSearch client declaring no
-                     module name, a descriptor could only require it by the name of its jar -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.5.1</version>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Automatic-Module-Name>com.chavaillaz.appender.log4j.opensearch</Automatic-Module-Name>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
             </plugin>
 
             <plugin>

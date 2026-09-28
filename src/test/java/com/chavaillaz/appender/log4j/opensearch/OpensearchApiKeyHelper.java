@@ -2,12 +2,12 @@ package com.chavaillaz.appender.log4j.opensearch;
 
 import java.io.IOException;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.opensearch.generic.Body;
 import org.opensearch.client.opensearch.generic.Requests;
 import org.opensearch.client.opensearch.generic.Response;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 public class OpensearchApiKeyHelper {
 
@@ -58,7 +58,7 @@ public class OpensearchApiKeyHelper {
         String[] candidateFields = {"api_key", "apiKey", "token", "key"};
         for (String field : candidateFields) {
             if (root.hasNonNull(field)) {
-                return root.get(field).asText();
+                return root.get(field).asString();
             }
         }
 
