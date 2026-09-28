@@ -4,12 +4,15 @@ import static com.chavaillaz.appender.log4j.opensearch.OpensearchUtils.createCli
 import static java.time.OffsetDateTime.now;
 import static java.util.concurrent.CompletableFuture.completedFuture;
 
+import java.nio.file.Path;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import com.chavaillaz.appender.FileDeadLetterListener;
+import com.chavaillaz.appender.LogDeliveryListener;
 import com.chavaillaz.appender.TransmissionResult;
 import com.chavaillaz.appender.log4j.AbstractBatchLogDelivery;
 import org.jspecify.annotations.Nullable;
@@ -33,7 +36,8 @@ public class OpensearchLogDelivery extends AbstractBatchLogDelivery<OpensearchCo
      * @param configuration The configuration to use
      */
     public OpensearchLogDelivery(OpensearchConfiguration configuration) {
-        this(configuration, createClient(configuration));
+        // The listener first, so that a directory it cannot create does not leave a client running
+        this(configuration, deadLetterListener(configuration), createClient(configuration));
     }
 
     /**
@@ -43,8 +47,24 @@ public class OpensearchLogDelivery extends AbstractBatchLogDelivery<OpensearchCo
      * @param client        The OpenSearch client to use, whose transport is closed along with this delivery
      */
     public OpensearchLogDelivery(OpensearchConfiguration configuration, OpenSearchClient client) {
-        super(configuration);
+        this(configuration, deadLetterListener(configuration), client);
+    }
+
+    private OpensearchLogDelivery(OpensearchConfiguration configuration, @Nullable LogDeliveryListener listener, OpenSearchClient client) {
+        super(configuration, listener);
         this.client = client;
+    }
+
+    /**
+     * Creates the listener saving the documents dropped to the dead-letter file of the configuration.
+     *
+     * @param configuration The configuration to use
+     * @return The listener, or {@code null} without a dead-letter file
+     * @throws java.io.UncheckedIOException If the directory of the file does not exist and cannot be created
+     */
+    private static @Nullable LogDeliveryListener deadLetterListener(OpensearchConfiguration configuration) {
+        Path file = configuration.getDeadLetterFile();
+        return file != null ? new FileDeadLetterListener(file) : null;
     }
 
     @Override

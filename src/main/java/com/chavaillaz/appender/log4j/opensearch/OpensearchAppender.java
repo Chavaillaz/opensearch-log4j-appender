@@ -6,6 +6,7 @@ import static org.apache.logging.log4j.core.Appender.ELEMENT_TYPE;
 import static org.apache.logging.log4j.core.Core.CATEGORY_NAME;
 import static org.apache.logging.log4j.core.layout.PatternLayout.createDefaultLayout;
 
+import java.nio.file.Path;
 import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 
@@ -142,6 +143,9 @@ public class OpensearchAppender extends AbstractLogDeliveryAppender<OpensearchCo
         @PluginBuilderAttribute("ApiKey")
         private String apiKey = getProperty("OPENSEARCH_API_KEY", null);
 
+        @PluginBuilderAttribute("DeadLetterFile")
+        private String deadLetterFile = getProperty("DEAD_LETTER_FILE", null);
+
         @PluginBuilderAttribute("FlushThreshold")
         private long flushThreshold = 100;
 
@@ -201,6 +205,7 @@ public class OpensearchAppender extends AbstractLogDeliveryAppender<OpensearchCo
                     .user(getUser())
                     .password(getPassword())
                     .apiKey(getApiKey())
+                    .deadLetterFile(toPath(getDeadLetterFile()))
                     .deliveryOptions(DeliveryOptions.builder()
                             .flushThreshold(getFlushThreshold())
                             .flushInterval(Duration.ofMillis(getFlushInterval()))
@@ -228,6 +233,16 @@ public class OpensearchAppender extends AbstractLogDeliveryAppender<OpensearchCo
          */
         private static @Nullable DateTimeFormatter toFormatter(@Nullable String pattern) {
             return pattern == null || pattern.isEmpty() ? null : DateTimeFormatter.ofPattern(pattern);
+        }
+
+        /**
+         * Parses the path of the dead-letter file.
+         *
+         * @param path The path, or an empty one for none
+         * @return The path, or {@code null} for none
+         */
+        private static @Nullable Path toPath(@Nullable String path) {
+            return path == null || path.isBlank() ? null : Path.of(path);
         }
 
         /**
