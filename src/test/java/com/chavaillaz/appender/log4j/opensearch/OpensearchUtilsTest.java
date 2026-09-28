@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import org.junit.jupiter.api.Test;
-import org.opensearch.client.opensearch.OpenSearchClient;
+import org.opensearch.client.opensearch.OpenSearchAsyncClient;
 
 class OpensearchUtilsTest {
 
@@ -17,7 +17,7 @@ class OpensearchUtilsTest {
                 .build();
 
         // When
-        OpenSearchClient client = assertDoesNotThrow(() -> createClient(configuration));
+        OpenSearchAsyncClient client = assertDoesNotThrow(() -> createClient(configuration));
 
         // Then
         assertThat(client).isNotNull();
@@ -33,7 +33,7 @@ class OpensearchUtilsTest {
                 .build();
 
         // When
-        OpenSearchClient client = assertDoesNotThrow(() -> createClient(configuration));
+        OpenSearchAsyncClient client = assertDoesNotThrow(() -> createClient(configuration));
 
         // Then
         assertThat(client).isNotNull();

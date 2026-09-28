@@ -72,8 +72,8 @@ class OpensearchAppenderTest {
             // Given
             String id = UUID.randomUUID().toString();
             String logger = getRootLogger().getClass().getCanonicalName();
-            OpenSearchClient client = createClient(container.getHttpHostAddress(), URL_TRUSTED, container.getUsername(), container.getPassword());
-            OpenSearchClient apiClient = createClient(container.getHttpHostAddress(), URL_TRUSTED, createApiKey(client));
+            OpenSearchClient client = new OpenSearchClient(createClient(container.getHttpHostAddress(), URL_TRUSTED, container.getUsername(), container.getPassword())._transport());
+            OpenSearchClient apiClient = new OpenSearchClient(createClient(container.getHttpHostAddress(), URL_TRUSTED, createApiKey(client))._transport());
             OpensearchAppender appender = createAppender(container.getHttpHostAddress(), container.getUsername(), container.getPassword());
             ThreadContext.put("key", "value");
 

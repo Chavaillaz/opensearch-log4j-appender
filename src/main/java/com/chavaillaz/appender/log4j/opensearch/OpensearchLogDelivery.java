@@ -16,7 +16,7 @@ import com.chavaillaz.appender.LogDeliveryListener;
 import com.chavaillaz.appender.TransmissionResult;
 import com.chavaillaz.appender.log4j.AbstractBatchLogDelivery;
 import org.jspecify.annotations.Nullable;
-import org.opensearch.client.opensearch.OpenSearchClient;
+import org.opensearch.client.opensearch.OpenSearchAsyncClient;
 import org.opensearch.client.opensearch._types.ErrorResponse;
 import org.opensearch.client.opensearch._types.OpenSearchException;
 import org.opensearch.client.opensearch.core.BulkRequest;
@@ -24,7 +24,8 @@ import org.opensearch.client.opensearch.core.BulkResponse;
 import org.opensearch.client.opensearch.core.bulk.BulkResponseItem;
 
 /**
- * Implementation of logs transmission for OpenSearch.
+ * Implementation of logs transmission for OpenSearch, through its asynchronous client: a bulk request holds
+ * no thread while waiting for its answer, which completes the future the library handles.
  */
 public class OpensearchLogDelivery extends AbstractBatchLogDelivery<OpensearchConfiguration> {
 
@@ -34,7 +35,7 @@ public class OpensearchLogDelivery extends AbstractBatchLogDelivery<OpensearchCo
      */
     private static final int ACTION_OVERHEAD = 25;
 
-    private final OpenSearchClient client;
+    private final OpenSearchAsyncClient client;
 
     /**
      * The length of the name of the index the documents are sent to, taken once, a date suffix keeping it
@@ -56,13 +57,14 @@ public class OpensearchLogDelivery extends AbstractBatchLogDelivery<OpensearchCo
      * Creates a new logs delivery handler for OpenSearch.
      *
      * @param configuration The configuration to use
-     * @param client        The OpenSearch client to use, whose transport is closed along with this delivery
+     * @param client        The asynchronous OpenSearch client to use, whose transport is closed along with this
+     *                      delivery
      */
-    public OpensearchLogDelivery(OpensearchConfiguration configuration, OpenSearchClient client) {
+    public OpensearchLogDelivery(OpensearchConfiguration configuration, OpenSearchAsyncClient client) {
         this(configuration, deadLetterListener(configuration), client);
     }
 
-    private OpensearchLogDelivery(OpensearchConfiguration configuration, @Nullable LogDeliveryListener listener, OpenSearchClient client) {
+    private OpensearchLogDelivery(OpensearchConfiguration configuration, @Nullable LogDeliveryListener listener, OpenSearchAsyncClient client) {
         super(configuration, listener);
         this.client = client;
         this.indexNameLength = configuration.generateIndexName(now()).length();
@@ -92,7 +94,8 @@ public class OpensearchLogDelivery extends AbstractBatchLogDelivery<OpensearchCo
                                 .document(document)));
             }
 
-            return completedFuture(toResult(documents, client.bulk(builder.build())));
+            // Completed by a thread of the client once answered, the library handling the result on its own
+            return client.bulk(builder.build()).thenApply(response -> toResult(documents, response));
         } catch (Exception e) {
             // Logged with its cause and retried by the library
             return completedFuture(TransmissionResult.failure(e));
