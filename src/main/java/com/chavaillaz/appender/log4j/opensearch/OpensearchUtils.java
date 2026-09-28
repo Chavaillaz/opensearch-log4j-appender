@@ -28,7 +28,8 @@ import org.opensearch.client.transport.httpclient5.ApacheHttpClient5TransportBui
 public class OpensearchUtils {
 
     /**
-     * Creates a new OpenSearch client.
+     * Creates a new OpenSearch client, authenticating with the API key, or the user when there is none, or
+     * not at all for a cluster without security.
      *
      * @param configuration The configuration to use
      * @return The OpenSearch client with the given configuration
@@ -37,9 +38,29 @@ public class OpensearchUtils {
         String apiKey = configuration.getApiKey();
         if (apiKey != null && !apiKey.isBlank()) {
             return createClient(configuration.getUrl(), configuration.isUrlTrusted(), apiKey);
-        } else {
+        } else if (configuration.getUser() != null) {
             return createClient(configuration.getUrl(), configuration.isUrlTrusted(), configuration.getUser(), configuration.getPassword());
+        } else {
+            return createClient(configuration.getUrl(), configuration.isUrlTrusted());
         }
+    }
+
+    /**
+     * Creates a new OpenSearch client without authentication, for a cluster without security.
+     *
+     * @param url     The URL of the OpenSearch instance to reach
+     * @param trusted If {@code true} the client will trust all certificates
+     * @return The OpenSearch client with the given configuration
+     */
+    @SneakyThrows
+    public static OpenSearchClient createClient(String url, boolean trusted) {
+        AsyncClientConnectionManager connectionManager = getClientConnectionManager(trusted);
+        return new OpenSearchClient(ApacheHttpClient5TransportBuilder
+                .builder(HttpHost.create(url))
+                .setMapper(getJsonMapper())
+                .setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder
+                        .setConnectionManager(connectionManager))
+                .build());
     }
 
     /**
@@ -48,7 +69,7 @@ public class OpensearchUtils {
      * @param url      The URL of the OpenSearch instance to reach
      * @param trusted  If {@code true} the client will trust all certificates
      * @param username The username to authenticate
-     * @param password The password corresponding to the given username
+     * @param password The password corresponding to the given username, or {@code null} for none
      * @return The OpenSearch client with the given configuration
      */
     @SneakyThrows
@@ -57,7 +78,7 @@ public class OpensearchUtils {
         BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         credentialsProvider.setCredentials(
                 new AuthScope(null, -1),
-                new UsernamePasswordCredentials(username, password.toCharArray())
+                new UsernamePasswordCredentials(username, password != null ? password.toCharArray() : new char[0])
         );
 
         return new OpenSearchClient(ApacheHttpClient5TransportBuilder
