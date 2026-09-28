@@ -59,7 +59,7 @@ class OpensearchConfigurationTest {
         OpensearchAppender.Builder builder = OpensearchAppender.builder()
                 .setName("appender")
                 .setFlushLevel("warn")
-                .setMaxRequestBytes(10_485_760)
+                .setMaxRequestBytes(5_242_880)
                 .setRetryBackoff(0)
                 .setCloseTimeout(5_000);
 
@@ -68,11 +68,30 @@ class OpensearchConfigurationTest {
 
         // Then: the attributes set are applied, the others keeping their defaults
         assertThat(options.flushLevel()).isEqualTo(Level.WARN);
-        assertThat(options.maxRequestBytes()).isEqualTo(10_485_760);
+        assertThat(options.maxRequestBytes()).isEqualTo(5_242_880);
         assertThat(options.retryBackoff()).isZero();
         assertThat(options.closeTimeout()).isEqualTo(Duration.ofSeconds(5));
         assertThat(options.flushThreshold()).isEqualTo(100);
         assertThat(options.maxPendingDocuments()).isEqualTo(DeliveryOptions.defaults().maxPendingDocuments());
+    }
+
+    @Test
+    void testDefaultsSplitRequestsPastTenMebibytes() {
+        // When: neither attributes nor options given
+        DeliveryOptions fromAttributes = OpensearchAppender.builder()
+                .setName("appender")
+                .build()
+                .getLogConfiguration()
+                .getDeliveryOptions();
+        DeliveryOptions fromConfiguration = OpensearchConfiguration.builder()
+                .build()
+                .getDeliveryOptions();
+
+        // Then: the same defaults either way, a bulk request never growing past 10 MiB
+        assertThat(fromAttributes).isEqualTo(OpensearchConfiguration.DEFAULT_DELIVERY_OPTIONS);
+        assertThat(fromConfiguration).isEqualTo(OpensearchConfiguration.DEFAULT_DELIVERY_OPTIONS);
+        assertThat(fromAttributes.maxRequestBytes()).isEqualTo(10_485_760);
+        assertThat(fromAttributes.flushThreshold()).isEqualTo(100);
     }
 
     @Test
