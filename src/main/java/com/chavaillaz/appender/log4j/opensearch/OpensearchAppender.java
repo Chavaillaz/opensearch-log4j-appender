@@ -7,8 +7,9 @@ import static org.apache.logging.log4j.core.Core.CATEGORY_NAME;
 import static org.apache.logging.log4j.core.layout.PatternLayout.createDefaultLayout;
 
 import java.time.Duration;
-import java.util.Optional;
+import java.time.format.DateTimeFormatter;
 
+import com.chavaillaz.appender.DeliveryOptions;
 import com.chavaillaz.appender.LogDelivery;
 import com.chavaillaz.appender.log4j.AbstractLogDeliveryAppender;
 import com.chavaillaz.appender.log4j.DefaultLogConverter;
@@ -16,14 +17,17 @@ import com.chavaillaz.appender.log4j.LogConverter;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
-import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.plugins.PluginBuilderAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginBuilderFactory;
 import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
+import org.apache.logging.log4j.status.StatusLogger;
+import org.apache.logging.log4j.util.LoaderUtil;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Appender implementation using OpenSearch for transmissions of logs from Log4j.
@@ -31,13 +35,47 @@ import org.apache.logging.log4j.core.config.plugins.validation.constraints.Requi
 @Plugin(name = "OpensearchAppender", category = CATEGORY_NAME, elementType = ELEMENT_TYPE)
 public class OpensearchAppender extends AbstractLogDeliveryAppender<OpensearchConfiguration> {
 
-    protected OpensearchAppender(String name, Filter filter, Layout<?> layout, OpensearchConfiguration configuration) {
+    /**
+     * The status logger of Log4j2 rather than an application logger, which would feed these diagnostics back
+     * into this appender.
+     */
+    private static final Logger log = StatusLogger.getLogger();
+
+    /**
+     * The converter the configuration names, or {@code null} for the default one of the appender.
+     */
+    private final @Nullable LogConverter converter;
+
+    protected OpensearchAppender(String name, @Nullable Filter filter, @Nullable Layout<?> layout, OpensearchConfiguration configuration) {
         super(name, filter, layout, configuration);
+        this.converter = createConverter(configuration);
     }
 
     @PluginBuilderFactory
     public static Builder builder() {
         return new Builder();
+    }
+
+    /**
+     * Creates the converter the configuration names, configured with it.
+     *
+     * @param configuration The configuration naming the converter
+     * @return The converter, or {@code null} for the default one, which is also used, and reported, when the
+     *         converter named cannot be created
+     */
+    private static @Nullable LogConverter createConverter(OpensearchConfiguration configuration) {
+        String className = configuration.getConverter();
+        if (className == null || className.isBlank() || DefaultLogConverter.class.getName().equals(className)) {
+            return null;
+        }
+        try {
+            LogConverter created = LoaderUtil.newCheckedInstanceOf(className, LogConverter.class);
+            created.configure(configuration);
+            return created;
+        } catch (Exception | LinkageError e) {
+            log.error("Unable to create the converter {}, converting with the default one instead", className, e);
+            return null;
+        }
     }
 
     @Override
@@ -46,11 +84,8 @@ public class OpensearchAppender extends AbstractLogDeliveryAppender<OpensearchCo
     }
 
     @Override
-    public Runnable createLogDeliveryTask(LogEvent loggingEvent) {
-        LogConverter converter = getLogConfiguration().getConverter();
-        LogEvent immutableEvent = loggingEvent.toImmutable();
-        return () -> Optional.ofNullable(getLogDeliveryHandler())
-                .ifPresent(handler -> handler.send(converter.convert(immutableEvent)));
+    protected LogConverter getLogConverter() {
+        return converter != null ? converter : super.getLogConverter();
     }
 
     @Setter
@@ -109,21 +144,34 @@ public class OpensearchAppender extends AbstractLogDeliveryAppender<OpensearchCo
 
         @Override
         public OpensearchAppender build() {
-            OpensearchConfiguration configuration = new OpensearchConfiguration();
-            configuration.setApplication(getApplicationName());
-            configuration.setHost(getHostName());
-            configuration.setEnvironment(getEnvironmentName());
-            configuration.setConverter(getConverter());
-            configuration.setIndex(getIndex());
-            configuration.setIndexSuffix(getIndexSuffix());
-            configuration.setUrl(getUrl());
-            configuration.setUrlTrusted(isUrlTrusted());
-            configuration.setUser(getUser());
-            configuration.setPassword(getPassword());
-            configuration.setApiKey(getApiKey());
-            configuration.setFlushThreshold(getFlushThreshold());
-            configuration.setFlushInterval(Duration.ofMillis(getFlushInterval()));
+            OpensearchConfiguration configuration = OpensearchConfiguration.builder()
+                    .application(getApplicationName())
+                    .host(getHostName())
+                    .environment(getEnvironmentName())
+                    .converter(getConverter())
+                    .index(getIndex())
+                    .indexSuffix(toFormatter(getIndexSuffix()))
+                    .url(getUrl())
+                    .urlTrusted(isUrlTrusted())
+                    .user(getUser())
+                    .password(getPassword())
+                    .apiKey(getApiKey())
+                    .deliveryOptions(DeliveryOptions.builder()
+                            .flushThreshold(getFlushThreshold())
+                            .flushInterval(Duration.ofMillis(getFlushInterval()))
+                            .build())
+                    .build();
             return new OpensearchAppender(getName(), getFilter(), getLayout(), configuration);
+        }
+
+        /**
+         * Parses the pattern of the index suffix.
+         *
+         * @param pattern The pattern, following {@link DateTimeFormatter}, or an empty one for no suffix
+         * @return The formatter, or {@code null} for no suffix
+         */
+        private static @Nullable DateTimeFormatter toFormatter(@Nullable String pattern) {
+            return pattern == null || pattern.isEmpty() ? null : DateTimeFormatter.ofPattern(pattern);
         }
 
     }

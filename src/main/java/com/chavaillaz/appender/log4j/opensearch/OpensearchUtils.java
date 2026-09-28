@@ -1,7 +1,5 @@
 package com.chavaillaz.appender.log4j.opensearch;
 
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-
 import java.security.GeneralSecurityException;
 
 import lombok.SneakyThrows;
@@ -36,8 +34,9 @@ public class OpensearchUtils {
      * @return The OpenSearch client with the given configuration
      */
     public static OpenSearchClient createClient(OpensearchConfiguration configuration) {
-        if (isNotBlank(configuration.getApiKey())) {
-            return createClient(configuration.getUrl(), configuration.isUrlTrusted(), configuration.getApiKey());
+        String apiKey = configuration.getApiKey();
+        if (apiKey != null && !apiKey.isBlank()) {
+            return createClient(configuration.getUrl(), configuration.isUrlTrusted(), apiKey);
         } else {
             return createClient(configuration.getUrl(), configuration.isUrlTrusted(), configuration.getUser(), configuration.getPassword());
         }
