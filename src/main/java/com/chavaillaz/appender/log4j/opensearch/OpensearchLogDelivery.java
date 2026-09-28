@@ -28,7 +28,19 @@ import org.opensearch.client.opensearch.core.bulk.BulkResponseItem;
  */
 public class OpensearchLogDelivery extends AbstractBatchLogDelivery<OpensearchConfiguration> {
 
+    /**
+     * Bytes the action preceding each document adds to a bulk request, the name of the index aside:
+     * {@code {"index":{"_index":""}}} and the line feeds ending both lines.
+     */
+    private static final int ACTION_OVERHEAD = 25;
+
     private final OpenSearchClient client;
+
+    /**
+     * The length of the name of the index the documents are sent to, taken once, a date suffix keeping it
+     * the same from one day to the next.
+     */
+    private final int indexNameLength;
 
     /**
      * Creates a new logs delivery handler for OpenSearch.
@@ -53,6 +65,7 @@ public class OpensearchLogDelivery extends AbstractBatchLogDelivery<OpensearchCo
     private OpensearchLogDelivery(OpensearchConfiguration configuration, @Nullable LogDeliveryListener listener, OpenSearchClient client) {
         super(configuration, listener);
         this.client = client;
+        this.indexNameLength = configuration.generateIndexName(now()).length();
     }
 
     /**
@@ -128,6 +141,16 @@ public class OpensearchLogDelivery extends AbstractBatchLogDelivery<OpensearchCo
         return rejected.size() == documents.size()
                 ? TransmissionResult.failure(cause)
                 : TransmissionResult.partialFailure(rejected, cause);
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Counts the action preceding the document in a bulk request as well.
+     */
+    @Override
+    protected long estimateDocumentSize(Map<String, Object> document) {
+        return super.estimateDocumentSize(document) + ACTION_OVERHEAD + indexNameLength;
     }
 
     @Override

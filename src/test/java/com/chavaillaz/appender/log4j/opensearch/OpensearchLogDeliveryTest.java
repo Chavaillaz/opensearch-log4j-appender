@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import com.chavaillaz.appender.DeliveryOptions;
+import com.chavaillaz.appender.DocumentSizeEstimator;
 import com.chavaillaz.appender.TransmissionResult;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -90,6 +91,23 @@ class OpensearchLogDeliveryTest {
 
         // Then: all of them are retried rather than some lost
         assertThat(result).isInstanceOf(TransmissionResult.Failure.class);
+    }
+
+    @Test
+    void testSizeCountsTheActionOfTheDocument() throws Exception {
+        // Given
+        OpensearchConfiguration configuration = OpensearchConfiguration.builder()
+                .url("http://localhost:1")
+                .index("logs")
+                .build();
+        OpensearchLogDelivery delivery = new OpensearchLogDelivery(configuration);
+
+        // When
+        long size = delivery.estimateDocumentSize(FIRST);
+
+        // Then: the document, and the action preceding it, with the line feeds ending both lines
+        assertThat(size).isEqualTo(DocumentSizeEstimator.estimate(FIRST) + "{\"index\":{\"_index\":\"logs\"}}".length() + 2);
+        delivery.close();
     }
 
     @Test
