@@ -97,8 +97,11 @@ single bulk request, which OpenSearch can refuse for its size.
             <UrlTrusted>true</UrlTrusted>
             <User>admin</User>
             <Password>admin</Password>
+            <DeadLetterFile>/var/log/myApplication/dead-letters.ndjson</DeadLetterFile>
             <FlushThreshold>100</FlushThreshold>
             <FlushInterval>5000</FlushInterval>
+            <FlushLevel>ERROR</FlushLevel>
+            <MaxRequestBytes>10485760</MaxRequestBytes>
         </OpensearchAppender>
     </Appenders>
     <Loggers>
