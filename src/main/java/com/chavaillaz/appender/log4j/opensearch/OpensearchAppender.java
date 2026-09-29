@@ -126,6 +126,7 @@ public class OpensearchAppender extends AbstractLogDeliveryAppender<OpensearchCo
         private String indexSuffix = getProperty("INDEX_SUFFIX", "");
 
         @PluginBuilderAttribute("Url")
+        @Required(message = "No URL of OpenSearch provided")
         private String url = getProperty("OPENSEARCH_URL", null);
 
         @PluginBuilderAttribute("UrlTrusted")

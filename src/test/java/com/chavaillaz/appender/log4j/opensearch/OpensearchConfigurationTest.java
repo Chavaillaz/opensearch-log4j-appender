@@ -1,9 +1,11 @@
 package com.chavaillaz.appender.log4j.opensearch;
 
+import static com.chavaillaz.appender.log4j.CommonUtils.getProperty;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.time.OffsetDateTime.now;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -178,6 +180,50 @@ class OpensearchConfigurationTest {
         // Then: the attributes are listed, but for the values of the password and the API key
         assertThat(messages).anyMatch(message -> message.contains("User=\"admin\""));
         assertThat(messages).noneMatch(message -> message.contains("my-password") || message.contains("my-api-key"));
+    }
+
+    @Test
+    void testMissingUrlFailsTheConfiguration() throws Exception {
+        // Given: no URL given by the OPENSEARCH_URL variable either
+        assumeTrue(getProperty("OPENSEARCH_URL", null) == null);
+
+        // When
+        LoggerContext context = startContext("""
+                <OpensearchAppender name="Opensearch"/>
+                """);
+
+        // Then: the appender is not created, rather than created unable to send anything
+        try {
+            assertThat(context.getConfiguration().getAppenders()).doesNotContainKey("Opensearch");
+        } finally {
+            context.stop();
+        }
+    }
+
+    @Test
+    void testUrlGivenByTheVariableIsEnough() throws Exception {
+        // Given: the URL given by the OPENSEARCH_URL variable, here as a system property
+        assumeTrue(System.getenv("OPENSEARCH_URL") == null);
+        System.setProperty("OPENSEARCH_URL", "http://localhost:1");
+
+        // When
+        LoggerContext context;
+        try {
+            context = startContext("""
+                    <OpensearchAppender name="Opensearch"/>
+                    """);
+        } finally {
+            System.clearProperty("OPENSEARCH_URL");
+        }
+
+        // Then
+        try {
+            OpensearchAppender appender = context.getConfiguration().getAppender("Opensearch");
+            assertThat(appender).isNotNull();
+            assertThat(appender.getLogConfiguration().getUrl()).isEqualTo("http://localhost:1");
+        } finally {
+            context.stop();
+        }
     }
 
     @Test
