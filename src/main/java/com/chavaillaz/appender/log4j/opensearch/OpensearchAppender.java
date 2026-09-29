@@ -144,7 +144,7 @@ public class OpensearchAppender extends AbstractLogDeliveryAppender<OpensearchCo
         private String deadLetterFile = getProperty("DEAD_LETTER_FILE", null);
 
         @PluginBuilderAttribute("FlushThreshold")
-        private long flushThreshold = DEFAULTS.flushThreshold();
+        private int flushThreshold = DEFAULTS.flushThreshold();
 
         @PluginBuilderAttribute("FlushInterval")
         private long flushInterval = DEFAULTS.flushInterval().toMillis();
