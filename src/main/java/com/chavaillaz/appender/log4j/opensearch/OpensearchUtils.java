@@ -49,7 +49,7 @@ public class OpensearchUtils {
      * Creates a new asynchronous OpenSearch client without authentication, for a cluster without security.
      *
      * @param url     The URL of the OpenSearch instance to reach
-     * @param trusted If {@code true} the client will trust all certificates
+     * @param trusted Whether to trust any certificate OpenSearch presents, without verifying its host name either
      * @return The OpenSearch client with the given configuration
      */
     @SneakyThrows
@@ -67,7 +67,7 @@ public class OpensearchUtils {
      * Creates a new asynchronous OpenSearch client.
      *
      * @param url      The URL of the OpenSearch instance to reach
-     * @param trusted  If {@code true} the client will trust all certificates
+     * @param trusted  Whether to trust any certificate OpenSearch presents, without verifying its host name either
      * @param username The username to authenticate
      * @param password The password corresponding to the given username, or {@code null} for none
      * @return The OpenSearch client with the given configuration
@@ -94,7 +94,7 @@ public class OpensearchUtils {
      * Creates a new asynchronous OpenSearch client.
      *
      * @param url     The URL of the OpenSearch instance to reach
-     * @param trusted If {@code true} the client will trust all certificates
+     * @param trusted Whether to trust any certificate OpenSearch presents, without verifying its host name either
      * @param apiKey  The encoded API key to authenticate
      * @return The OpenSearch client with the given configuration
      */
@@ -113,9 +113,9 @@ public class OpensearchUtils {
     }
 
     /**
-     * Creates a new JSON mapper using Jackson.
+     * Creates a new JSON mapper using Jackson 3.
      *
-     * @return The mapper with Java time module registered
+     * @return The mapper turning the documents into JSON
      */
     public static JacksonJsonpMapper getJsonMapper() {
         return new JacksonJsonpMapper();
@@ -124,8 +124,9 @@ public class OpensearchUtils {
     /**
      * Creates a new client connection manager.
      *
-     * @param trustAll If {@code true} the connection manager will trust all certificates
-     * @return The connection manager with a custom TLS strategy
+     * @param trustAll Whether to trust any certificate, without verifying the host name either
+     * @return The connection manager, verifying certificates and host names as the JVM does by default unless
+     *         trusting all of them
      * @throws GeneralSecurityException If there is an issue creating the SSL context
      */
     public static AsyncClientConnectionManager getClientConnectionManager(boolean trustAll) throws GeneralSecurityException {
