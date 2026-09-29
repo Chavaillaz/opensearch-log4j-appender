@@ -134,10 +134,14 @@ public class OpensearchAppender extends AbstractLogDeliveryAppender<OpensearchCo
         @PluginBuilderAttribute("User")
         private String user = getProperty("OPENSEARCH_USER", null);
 
-        @PluginBuilderAttribute("Password")
+        /**
+         * The password, which the status logger lists hashed among the attributes of the appender, as the API
+         * key, rather than as given.
+         */
+        @PluginBuilderAttribute(value = "Password", sensitive = true)
         private String password = getProperty("OPENSEARCH_PASSWORD", null);
 
-        @PluginBuilderAttribute("ApiKey")
+        @PluginBuilderAttribute(value = "ApiKey", sensitive = true)
         private String apiKey = getProperty("OPENSEARCH_API_KEY", null);
 
         @PluginBuilderAttribute("DeadLetterFile")
