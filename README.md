@@ -22,7 +22,7 @@ for more details.
 
 ## Installation
 
-The dependency is available in maven central (see badge and table above for the version):
+The dependency is available in Maven Central (see badge and table above for the version):
 
 ```xml
 <dependency>
@@ -36,7 +36,7 @@ package to Log4j2 to be built as a plugin. The OpenSearch client declaring no mo
 requires it by the name Java derives from its jar, `opensearch.java`, which the jar keeps as long as it keeps
 the name Maven gives it.
 
-You then have to configure log4j in order to include this appender (see configuration section below).
+You then have to configure Log4j in order to include this appender (see configuration section below).
 
 ## Configuration
 
@@ -52,7 +52,7 @@ In the Log4j configuration file, add a new appender `OpensearchAppender` using p
 | Index                      | INDEX                         | `ha`                        | The name of the OpenSearch index to which the documents are sent.                                                                         |
 | IndexSuffix                | INDEX_SUFFIX                  | -                           | The suffix added to the index name, the date of each event in a format pattern suitable for `DateTimeFormatter`.                          |
 | Url                        | OPENSEARCH_URL                | -                           | The address of OpenSearch in the format `scheme://host:port`.                                                                             |
-| UrlTrusted                 | -                             | false                       | The flag to disable SSL verification in case you use HTTPS for REST with a self signed certificate.                                       |
+| UrlTrusted                 | -                             | `false`                     | The flag to disable SSL verification in case you use HTTPS for REST with a self-signed certificate.                                       |
 | User                       | OPENSEARCH_USER               | -                           | The username to use as credentials to access OpenSearch.                                                                                  |
 | Password                   | OPENSEARCH_PASSWORD           | -                           | The password to use as credentials to access OpenSearch.                                                                                  |
 | ApiKey                     | OPENSEARCH_API_KEY            | -                           | The API key (already encoded) to use as credentials to access OpenSearch.                                                                 |
@@ -71,7 +71,7 @@ In the Log4j configuration file, add a new appender `OpensearchAppender` using p
 | MaxRetryBackoff            | -                             | `30000`                     | The maximum delay (ms) between two retries.                                                                                               |
 | CloseTimeout               | -                             | `30000`                     | The maximum time (ms) a stop waits for the documents still pending, while the `shutdownTimeout` of the Log4j configuration is `0`.        |
 
-Note that `Url` is the only mandatory configuration, except if you need to overwrite the default value of another ones.
+Note that `Url` is the only mandatory configuration, except if you need to override the default value of other ones.
 
 The properties from `FlushThreshold` on tune the delivery of the documents, as the
 [common library](https://github.com/chavaillaz/common-log4j-appender#configuration-reference) details them.
