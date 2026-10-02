@@ -2,7 +2,6 @@ package com.chavaillaz.appender.log4j.opensearch;
 
 import static com.chavaillaz.appender.log4j.opensearch.OpensearchUtils.createClient;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import org.junit.jupiter.api.Test;
 import org.opensearch.client.opensearch.OpenSearchAsyncClient;
@@ -17,7 +16,7 @@ class OpensearchUtilsTest {
                 .build();
 
         // When
-        OpenSearchAsyncClient client = assertDoesNotThrow(() -> createClient(configuration));
+        OpenSearchAsyncClient client = createClient(configuration);
 
         // Then
         assertThat(client).isNotNull();
@@ -33,7 +32,7 @@ class OpensearchUtilsTest {
                 .build();
 
         // When
-        OpenSearchAsyncClient client = assertDoesNotThrow(() -> createClient(configuration));
+        OpenSearchAsyncClient client = createClient(configuration);
 
         // Then
         assertThat(client).isNotNull();
