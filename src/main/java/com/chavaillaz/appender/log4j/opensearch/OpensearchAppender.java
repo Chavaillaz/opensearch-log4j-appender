@@ -102,7 +102,7 @@ public class OpensearchAppender extends AbstractLogDeliveryAppender<OpensearchCo
         private String name;
 
         @PluginElement("Filter")
-        private Filter filter;
+        private @Nullable Filter filter;
 
         @PluginBuilderAttribute("Application")
         private String applicationName = getProperty("APP", "unknown");
@@ -112,7 +112,7 @@ public class OpensearchAppender extends AbstractLogDeliveryAppender<OpensearchCo
          * when building the appender: its lookup can take seconds, for nothing when a host name is given.
          */
         @PluginBuilderAttribute("Host")
-        private String hostName;
+        private @Nullable String hostName;
 
         @PluginBuilderAttribute("Environment")
         private String environmentName = getProperty("ENV", "local");
@@ -124,7 +124,7 @@ public class OpensearchAppender extends AbstractLogDeliveryAppender<OpensearchCo
         private String index = getProperty("INDEX", "ha");
 
         @PluginBuilderAttribute("IndexSuffix")
-        private String indexSuffix = getProperty("INDEX_SUFFIX", "");
+        private @Nullable String indexSuffix = getProperty("INDEX_SUFFIX", "");
 
         @PluginBuilderAttribute("Url")
         @Required(message = "No URL of OpenSearch provided")
@@ -134,20 +134,20 @@ public class OpensearchAppender extends AbstractLogDeliveryAppender<OpensearchCo
         private boolean urlTrusted = false;
 
         @PluginBuilderAttribute("User")
-        private String user = getProperty("OPENSEARCH_USER", null);
+        private @Nullable String user = getProperty("OPENSEARCH_USER", null);
 
         /**
          * The password, which the status logger lists hashed among the attributes of the appender, as the API
          * key, rather than as given.
          */
         @PluginBuilderAttribute(value = "Password", sensitive = true)
-        private String password = getProperty("OPENSEARCH_PASSWORD", null);
+        private @Nullable String password = getProperty("OPENSEARCH_PASSWORD", null);
 
         @PluginBuilderAttribute(value = "ApiKey", sensitive = true)
-        private String apiKey = getProperty("OPENSEARCH_API_KEY", null);
+        private @Nullable String apiKey = getProperty("OPENSEARCH_API_KEY", null);
 
         @PluginBuilderAttribute("DeadLetterFile")
-        private String deadLetterFile = getProperty("DEAD_LETTER_FILE", null);
+        private @Nullable String deadLetterFile = getProperty("DEAD_LETTER_FILE", null);
 
         @PluginBuilderAttribute("FlushThreshold")
         private int flushThreshold = DEFAULTS.flushThreshold();
@@ -156,7 +156,7 @@ public class OpensearchAppender extends AbstractLogDeliveryAppender<OpensearchCo
         private long flushInterval = DEFAULTS.flushInterval().toMillis();
 
         @PluginBuilderAttribute("FlushLevel")
-        private String flushLevel;
+        private @Nullable String flushLevel;
 
         @PluginBuilderAttribute("MaxConcurrentTransmissions")
         private int maxConcurrentTransmissions = DEFAULTS.maxConcurrentTransmissions();

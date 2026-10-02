@@ -17,6 +17,7 @@ import org.apache.hc.core5.http.HttpHost;
 import org.apache.hc.core5.http.message.BasicHeader;
 import org.apache.hc.core5.http.nio.ssl.TlsStrategy;
 import org.apache.hc.core5.ssl.SSLContexts;
+import org.jspecify.annotations.Nullable;
 import org.opensearch.client.json.jackson3.JacksonJsonpMapper;
 import org.opensearch.client.opensearch.OpenSearchAsyncClient;
 import org.opensearch.client.transport.httpclient5.ApacheHttpClient5TransportBuilder;
@@ -36,10 +37,11 @@ public class OpensearchUtils {
      */
     public static OpenSearchAsyncClient createClient(OpensearchConfiguration configuration) {
         String apiKey = configuration.getApiKey();
+        String user = configuration.getUser();
         if (apiKey != null && !apiKey.isBlank()) {
             return createClient(configuration.getUrl(), configuration.isUrlTrusted(), apiKey);
-        } else if (configuration.getUser() != null) {
-            return createClient(configuration.getUrl(), configuration.isUrlTrusted(), configuration.getUser(), configuration.getPassword());
+        } else if (user != null) {
+            return createClient(configuration.getUrl(), configuration.isUrlTrusted(), user, configuration.getPassword());
         } else {
             return createClient(configuration.getUrl(), configuration.isUrlTrusted());
         }
@@ -73,7 +75,7 @@ public class OpensearchUtils {
      * @return The OpenSearch client with the given configuration
      */
     @SneakyThrows
-    public static OpenSearchAsyncClient createClient(String url, boolean trusted, String username, String password) {
+    public static OpenSearchAsyncClient createClient(String url, boolean trusted, String username, @Nullable String password) {
         AsyncClientConnectionManager connectionManager = getClientConnectionManager(trusted);
         BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         credentialsProvider.setCredentials(
