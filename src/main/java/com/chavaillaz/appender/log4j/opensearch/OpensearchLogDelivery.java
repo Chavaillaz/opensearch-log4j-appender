@@ -14,10 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import com.chavaillaz.appender.FileDeadLetterListener;
-import com.chavaillaz.appender.LogDeliveryListener;
-import com.chavaillaz.appender.TransmissionResult;
-import com.chavaillaz.appender.log4j.AbstractBatchLogDelivery;
 import org.jspecify.annotations.Nullable;
 import org.opensearch.client.opensearch.OpenSearchAsyncClient;
 import org.opensearch.client.opensearch._types.ErrorResponse;
@@ -25,6 +21,11 @@ import org.opensearch.client.opensearch._types.OpenSearchException;
 import org.opensearch.client.opensearch.core.BulkRequest;
 import org.opensearch.client.opensearch.core.BulkResponse;
 import org.opensearch.client.opensearch.core.bulk.BulkResponseItem;
+
+import com.chavaillaz.appender.FileDeadLetterListener;
+import com.chavaillaz.appender.LogDeliveryListener;
+import com.chavaillaz.appender.TransmissionResult;
+import com.chavaillaz.appender.log4j.AbstractBatchLogDelivery;
 
 /**
  * Implementation of logs transmission for OpenSearch, through its asynchronous client: a bulk request holds

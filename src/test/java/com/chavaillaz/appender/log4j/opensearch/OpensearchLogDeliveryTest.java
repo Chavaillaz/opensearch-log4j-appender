@@ -13,15 +13,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import com.chavaillaz.appender.DeliveryOptions;
-import com.chavaillaz.appender.DocumentSizeEstimator;
-import com.chavaillaz.appender.TransmissionResult;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.opensearch.client.opensearch._types.OpenSearchException;
 import org.opensearch.client.opensearch.core.BulkResponse;
 import org.opensearch.client.opensearch.core.bulk.BulkResponseItem;
 import org.opensearch.client.opensearch.core.bulk.OperationType;
+
+import com.chavaillaz.appender.DeliveryOptions;
+import com.chavaillaz.appender.DocumentSizeEstimator;
+import com.chavaillaz.appender.TransmissionResult;
 
 class OpensearchLogDeliveryTest {
 
