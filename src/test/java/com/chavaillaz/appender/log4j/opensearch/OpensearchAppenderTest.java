@@ -32,8 +32,8 @@ class OpensearchAppenderTest {
     protected static OpensearchAppender createAppender(String url, String username, String password) throws Exception {
         OpensearchAppender.Builder builder = OpensearchAppender.builder();
         builder.setName("my-appender");
-        builder.setApplicationName("my-application");
-        builder.setHostName(getLocalHost().getHostName());
+        builder.setApplication("my-application");
+        builder.setHost(getLocalHost().getHostName());
         builder.setUrl(url);
         builder.setUrlTrusted(URL_TRUSTED);
         builder.setUser(username);

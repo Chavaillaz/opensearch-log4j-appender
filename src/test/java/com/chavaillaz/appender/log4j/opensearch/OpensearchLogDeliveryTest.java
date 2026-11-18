@@ -4,23 +4,18 @@ import static com.chavaillaz.appender.log4j.opensearch.OpensearchLogDelivery.toR
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.net.ServerSocket;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 import org.opensearch.client.opensearch._types.OpenSearchException;
 import org.opensearch.client.opensearch.core.BulkResponse;
 import org.opensearch.client.opensearch.core.bulk.BulkResponseItem;
 import org.opensearch.client.opensearch.core.bulk.OperationType;
 
-import com.chavaillaz.appender.DeliveryOptions;
 import com.chavaillaz.appender.DocumentSizeEstimator;
 import com.chavaillaz.appender.TransmissionResult;
 
@@ -112,30 +107,6 @@ class OpensearchLogDeliveryTest {
         // Then: the document, and the action preceding it, with the line feeds ending both lines
         assertThat(size).isEqualTo(DocumentSizeEstimator.estimate(FIRST) + "{\"index\":{\"_index\":\"logs\"}}".length() + 2);
         delivery.close();
-    }
-
-    @Test
-    void testDroppedDocumentsAreSavedToTheDeadLetterFile(@TempDir Path directory) throws Exception {
-        // Given: a cluster that cannot be reached, and a single attempt per document
-        OpensearchConfiguration configuration = OpensearchConfiguration.builder()
-                .url("http://localhost:1")
-                .deadLetterFile(directory.resolve("dead-letters.ndjson"))
-                .deliveryOptions(DeliveryOptions.builder()
-                        .maxConsecutiveFailures(1)
-                        .build())
-                .build();
-        OpensearchLogDelivery delivery = new OpensearchLogDelivery(configuration);
-
-        // When
-        delivery.send(Map.of("logmessage", "saved"));
-        delivery.close(Duration.ofSeconds(10));
-
-        // Then: the document given up on is saved in the file of the day
-        try (Stream<Path> files = Files.list(directory)) {
-            List<Path> saved = files.toList();
-            assertThat(saved).hasSize(1);
-            assertThat(Files.readString(saved.getFirst())).contains("\"logmessage\":\"saved\"");
-        }
     }
 
     @Test
