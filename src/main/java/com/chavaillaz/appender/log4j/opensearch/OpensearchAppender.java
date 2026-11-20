@@ -17,6 +17,7 @@ import org.jspecify.annotations.Nullable;
 import com.chavaillaz.appender.DeliveryOptions;
 import com.chavaillaz.appender.LogDelivery;
 import com.chavaillaz.appender.log4j.AbstractLogDeliveryAppender;
+import com.chavaillaz.appender.log4j.LogDeliveryAppenderBuilder;
 
 /**
  * Appender implementation using OpenSearch for transmissions of logs from Log4j.
@@ -45,7 +46,7 @@ public class OpensearchAppender extends AbstractLogDeliveryAppender<OpensearchCo
     @Getter
     @Setter
     @Accessors(chain = true)
-    public static class Builder extends AbstractLogDeliveryAppender.Builder<OpensearchAppender, Builder> {
+    public static class Builder extends LogDeliveryAppenderBuilder<OpensearchAppender, Builder> {
 
         @PluginBuilderAttribute("Index")
         private String index = "ha";
