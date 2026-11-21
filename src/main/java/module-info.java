@@ -16,7 +16,6 @@ module com.chavaillaz.appender.log4j.opensearch {
     requires transitive org.apache.httpcomponents.client5.httpclient5;
     requires org.apache.httpcomponents.core5.httpcore5;
     requires tools.jackson.databind;
-    requires static lombok;
 
     // Declared on behalf of the client, which as an automatic module declares none of what it needs, so that the
     // modules it loads classes from are resolved along with it on the module path

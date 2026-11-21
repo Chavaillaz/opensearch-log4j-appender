@@ -1,9 +1,8 @@
 package com.chavaillaz.appender.log4j.opensearch;
 
+import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 
-import lombok.SneakyThrows;
-import lombok.experimental.UtilityClass;
 import org.apache.hc.client5.http.auth.AuthScope;
 import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
 import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
@@ -25,10 +24,11 @@ import org.opensearch.client.transport.httpclient5.ApacheHttpClient5TransportBui
 /**
  * OpenSearch specific utility methods.
  */
-// The private constructor of the class is declared by Lombok, after javac found none
-@SuppressWarnings("missing-explicit-ctor")
-@UtilityClass
-public class OpensearchUtils {
+public final class OpensearchUtils {
+
+    private OpensearchUtils() {
+        // Static methods only
+    }
 
     /**
      * Creates a new asynchronous OpenSearch client, authenticating with the API key, or the user when there is
@@ -56,11 +56,10 @@ public class OpensearchUtils {
      * @param trusted Whether to trust any certificate OpenSearch presents, without verifying its host name either
      * @return The OpenSearch client with the given configuration
      */
-    @SneakyThrows
     public static OpenSearchAsyncClient createClient(String url, boolean trusted) {
-        AsyncClientConnectionManager connectionManager = getClientConnectionManager(trusted);
+        AsyncClientConnectionManager connectionManager = createConnectionManager(trusted);
         return new OpenSearchAsyncClient(ApacheHttpClient5TransportBuilder
-                .builder(HttpHost.create(url))
+                .builder(toHost(url))
                 .setMapper(getJsonMapper())
                 .setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder
                         .setConnectionManager(connectionManager))
@@ -76,9 +75,8 @@ public class OpensearchUtils {
      * @param password The password corresponding to the given username, or {@code null} for none
      * @return The OpenSearch client with the given configuration
      */
-    @SneakyThrows
     public static OpenSearchAsyncClient createClient(String url, boolean trusted, String username, @Nullable String password) {
-        AsyncClientConnectionManager connectionManager = getClientConnectionManager(trusted);
+        AsyncClientConnectionManager connectionManager = createConnectionManager(trusted);
         BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         credentialsProvider.setCredentials(
                 new AuthScope(null, -1),
@@ -86,7 +84,7 @@ public class OpensearchUtils {
         );
 
         return new OpenSearchAsyncClient(ApacheHttpClient5TransportBuilder
-                .builder(HttpHost.create(url))
+                .builder(toHost(url))
                 .setMapper(getJsonMapper())
                 .setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder
                         .setDefaultCredentialsProvider(credentialsProvider)
@@ -102,13 +100,12 @@ public class OpensearchUtils {
      * @param apiKey  The encoded API key to authenticate
      * @return The OpenSearch client with the given configuration
      */
-    @SneakyThrows
     public static OpenSearchAsyncClient createClient(String url, boolean trusted, String apiKey) {
-        AsyncClientConnectionManager connectionManager = getClientConnectionManager(trusted);
+        AsyncClientConnectionManager connectionManager = createConnectionManager(trusted);
         Header headerApiKey = new BasicHeader("Authorization", "ApiKey " + apiKey);
 
         return new OpenSearchAsyncClient(ApacheHttpClient5TransportBuilder
-                .builder(HttpHost.create(url))
+                .builder(toHost(url))
                 .setMapper(getJsonMapper())
                 .setHttpClientConfigCallback(httpClientBuilder -> httpClientBuilder
                         .setConnectionManager(connectionManager))
@@ -140,6 +137,36 @@ public class OpensearchUtils {
         return PoolingAsyncClientConnectionManagerBuilder.create()
                 .setTlsStrategy(trustAll ? trustAllStrategy : null)
                 .build();
+    }
+
+    /**
+     * Creates the connection manager of a client, as {@link #getClientConnectionManager(boolean)} does.
+     *
+     * @param trustAll Whether to trust any certificate, without verifying the host name either
+     * @return The connection manager
+     * @throws IllegalStateException If the JDK cannot create the SSL context trusting every certificate
+     */
+    private static AsyncClientConnectionManager createConnectionManager(boolean trustAll) {
+        try {
+            return getClientConnectionManager(trustAll);
+        } catch (GeneralSecurityException e) {
+            throw new IllegalStateException("No SSL context trusting every certificate could be created", e);
+        }
+    }
+
+    /**
+     * Parses the address of OpenSearch.
+     *
+     * @param url The address, in the format {@code scheme://host:port}, the scheme defaulting to {@code http}
+     * @return The host to send the requests to
+     * @throws IllegalArgumentException If the address is not in that format
+     */
+    private static HttpHost toHost(String url) {
+        try {
+            return HttpHost.create(url);
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException("Invalid URL of OpenSearch: " + url, e);
+        }
     }
 
 }
