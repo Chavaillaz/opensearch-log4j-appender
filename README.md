@@ -1,5 +1,7 @@
 # OpenSearch Appender
 
+[v1]: https://github.com/chavaillaz/opensearch-log4j-appender/blob/1.1.3/README.md
+
 ![Quality Gate](https://github.com/chavaillaz/opensearch-log4j-appender/actions/workflows/code-quality.yml/badge.svg)
 ![Dependency Check](https://github.com/chavaillaz/opensearch-log4j-appender/actions/workflows/dependency-check.yml/badge.svg)
 [![Maven Central](https://maven-badges.sml.io/sonatype-central/com.chavaillaz/opensearch-log4j-appender/badge.svg?subject=Maven%20Central&color=blue)](https://maven-badges.sml.io/sonatype-central/com.chavaillaz/opensearch-log4j-appender)
@@ -8,15 +10,15 @@
 This appender allows you to send log events directly from Log4j to an OpenSearch cluster. The delivery of logs is done
 asynchronously and therefore will not block the execution of applications using it.
 
-| Appender version | Log4j version | OpenSearch version | Java version | Documentation |
-|------------------|---------------|--------------------|--------------|---------------|
-| 1.0.0            | 2.24.1        | 2.x                | 17+          | See below     |
-| 1.0.1            | 2.24.3        | 2.x                | 17+          | See below     |
-| 1.1.0            | 2.24.3        | 3.x                | 21+          | See below     |
-| 1.1.1            | 2.25.1        | 3.x                | 21+          | See below     |
-| 1.1.2            | 2.25.3        | 3.x                | 21+          | See below     |
-| 1.1.3            | 2.25.4        | 3.x                | 21+          | See below     |
-| 2.0.0            | 2.26.1        | 3.x                | 21+          | See below     |
+| Appender version | Log4j version | OpenSearch version | Java version | Documentation   |
+|------------------|---------------|--------------------|--------------|-----------------|
+| 1.0.0            | 2.24.1        | 2.x                | 17+          | [Version 1][v1] |
+| 1.0.1            | 2.24.3        | 2.x                | 17+          | [Version 1][v1] |
+| 1.1.0            | 2.24.3        | 3.x                | 21+          | [Version 1][v1] |
+| 1.1.1            | 2.25.1        | 3.x                | 21+          | [Version 1][v1] |
+| 1.1.2            | 2.25.3        | 3.x                | 21+          | [Version 1][v1] |
+| 1.1.3            | 2.25.4        | 3.x                | 21+          | [Version 1][v1] |
+| 2.0.0            | 2.26.1        | 3.x                | 21+          | See below       |
 
 See [the compatibility details from OpenSearch](https://github.com/opensearch-project/opensearch-java/blob/main/COMPATIBILITY.md)
 for more details.
