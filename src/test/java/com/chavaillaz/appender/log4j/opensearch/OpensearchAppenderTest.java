@@ -27,7 +27,7 @@ class OpensearchAppenderTest {
     public static final boolean URL_TRUSTED = true;
     public static final DockerImageName IMAGE = DockerImageName
             .parse("opensearchproject/opensearch")
-            .withTag("3.8.0");
+            .withTag("3.10.0");
 
     protected static OpensearchAppender createAppender(String url, String username, String password) throws Exception {
         OpensearchAppender.Builder builder = OpensearchAppender.builder();
