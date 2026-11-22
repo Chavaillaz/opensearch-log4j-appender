@@ -16,6 +16,7 @@ import java.util.UUID;
 import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.core.impl.Log4jLogEvent;
 import org.apache.logging.log4j.message.SimpleMessage;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.opensearch.client.opensearch.OpenSearchClient;
@@ -24,6 +25,7 @@ import org.opensearch.testcontainers.OpenSearchContainer;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
+@DisplayName("OpensearchAppender")
 class OpensearchAppenderTest {
 
     public static final boolean URL_TRUSTED = true;
@@ -63,6 +65,7 @@ class OpensearchAppenderTest {
     @Test
     // The cluster starts within the test, its image being pulled on the first run of a runner
     @Timeout(value = 10, unit = MINUTES)
+    @DisplayName("Ships an event to the cluster with its fields, its MDC entries and its stack trace")
     void systemTestWithOpensearch() throws Exception {
         try (OpenSearchContainer<?> container = new OpenSearchContainer<>(IMAGE)) {
             container.withSecurityEnabled();

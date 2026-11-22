@@ -3,12 +3,15 @@ package com.chavaillaz.appender.log4j.opensearch;
 import static com.chavaillaz.appender.log4j.opensearch.OpensearchUtils.createClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.opensearch.client.opensearch.OpenSearchAsyncClient;
 
+@DisplayName("OpensearchUtils")
 class OpensearchUtilsTest {
 
     @Test
+    @DisplayName("Creates a client with neither a user nor an API key")
     void testCreateClientWithoutCredentials() throws Exception {
         // Given: a cluster without security, reached with neither a user nor an API key
         OpensearchConfiguration configuration = OpensearchConfiguration.builder()
@@ -24,6 +27,7 @@ class OpensearchUtilsTest {
     }
 
     @Test
+    @DisplayName("Creates a client for a user whose password is left empty")
     void testCreateClientWithoutPassword() throws Exception {
         // Given: a user whose password is left empty
         OpensearchConfiguration configuration = OpensearchConfiguration.builder()
