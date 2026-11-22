@@ -4,6 +4,7 @@ import static com.chavaillaz.appender.log4j.opensearch.OpensearchApiKeyHelper.cr
 import static com.chavaillaz.appender.log4j.opensearch.OpensearchUtils.createClient;
 import static java.net.InetAddress.getLocalHost;
 import static java.time.Duration.ofSeconds;
+import static java.util.concurrent.TimeUnit.MINUTES;
 import static org.apache.logging.log4j.Level.INFO;
 import static org.apache.logging.log4j.LogManager.getRootLogger;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,6 +17,7 @@ import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.core.impl.Log4jLogEvent;
 import org.apache.logging.log4j.message.SimpleMessage;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 import org.opensearch.client.opensearch.OpenSearchClient;
 import org.opensearch.client.opensearch.core.search.Hit;
 import org.opensearch.testcontainers.OpenSearchContainer;
@@ -59,6 +61,8 @@ class OpensearchAppenderTest {
     }
 
     @Test
+    // The cluster starts within the test, its image being pulled on the first run of a runner
+    @Timeout(value = 10, unit = MINUTES)
     void systemTestWithOpensearch() throws Exception {
         try (OpenSearchContainer<?> container = new OpenSearchContainer<>(IMAGE)) {
             container.withSecurityEnabled();
